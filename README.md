@@ -63,7 +63,7 @@ Development will continue in my spare time. I am a bussy student, so this will m
  - add support for others subtitle formats than '.ass (SubStationAlpha'
  - interface improvements
  - multitrack support
- - styling support (basic *Italic* or **Bold** support for simple text-based subtitles such as '.srt' and advanced styling support for '.ass(SubStationAlpha)';
+ - styling support :(basic *Italic* and/or **Bold** support for simple text-based subtitles such as '.srt', advanced styling support for '.ass(SubStationAlpha)';
 
 License
 ----
