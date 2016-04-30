@@ -24,3 +24,14 @@
     font-family: Helvetica;
     color: #FFF;
 }
+
+.control-SPJS {
+    z-index: 1;
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    top: 90%;
+    padding: 5px 5px;
+    color: white;
+    font-size: 24pt;
+}
