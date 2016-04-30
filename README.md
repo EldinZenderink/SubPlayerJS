@@ -13,7 +13,7 @@ The library loads the video object once dynamically on your page, you only need 
 
 ### Tech
 
-Dillinger uses a number of open source projects to work properly:
+SubPlayerJS uses a number of open source projects to work properly:
 
 **Services:**
 * [RawGit](https://rawgit.com/) - making CDN through GitHub available
