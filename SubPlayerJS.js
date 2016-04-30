@@ -1,5 +1,6 @@
 var timeStamp = 0 + ":" + 0 + ":" + 0 + "." + 0;
-var subtitleArray = [];
+var previousVidWidth;
+var previousVidHeight;
 var lineNumber = 0;
 var currentTime = 0;
 var interval;
@@ -8,39 +9,108 @@ var subtitleIsSet = false;
 var guiIsvisible = false;
 var isPlaying = false;
 var isFullScreen = false;
+var subtitleArray = [];
+var isSeeking = false;
 var video;
 
 
+
+//loads video
 function LoadSubPlayerJS(file, subtitle, div, w, h) {
 
-    if (!$("link[href='http://fonts.googleapis.com/icon?family=Material+Icons']").length){
-        $('<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">').appendTo("head");
+
+    
+
+    resetSubtitle();
+
+    var vidwidth = 0;
+    var vidheight = 0;
+
+    if(w != null && w != "" && w != 0){
+        vidwidth = w;
+    } else {
+        vidwidth = "100%";
     }
 
-    if(!videoPlayerLoaded){
-        $(div).html()
+    if(h != null && h != "" && h != 0){
+        vidheight = h;
+    } else {
+        vidheight = "100%";
     }
-    
-    video = vid;
-    vid.addEventListener('loadedmetadata', function () {
+
+    if(!videoPlayerLoaded || previousVidHeight != h || previousVidWidth != w){
+        try{
+            $('body').append("");
+        } catch (e){
+            console.log("SubPlayer: jQuery not in header, appending now!");
+            loadjscssfile("https://code.jquery.com/jquery-2.1.1.min.js", "js");
+        }
+
+        if (!$("link[href='http://fonts.googleapis.com/icon?family=Material+Icons']").length){ 
+            loadjscssfile("http://fonts.googleapis.com/icon?family=Material+Icons", "css");
+        }
+        if (!$("link[href='https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css']").length){
+            loadjscssfile("https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css", "css");
+        }
+        if (!$("link[href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css']").length){
+            loadjscssfile("https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css", "css");
+        }
+        $(div).html('\
+             <div class="outer-container-SPJS ">\
+                <div class="inner-container-SPJS ">\
+                    <div class="video-overlay-SPJS" id="subtitle"><br /></div>\
+                    <div style="min-width: 100%; min-height: 100%;" class="control-SPJS"></div>\
+                    <video id="SubPlayerVideo" width="' + vidwidth + '" height="' + vidheight + '">\
+                    <source id="videoSource" src="">\
+                        Your browser does not support HTML5 video.\
+                    </video>\
+                </div>\
+            </div>'
+        );
+        videoPlayerLoaded = true;
+    }
+
+    previousVidWidth = w;
+    previousVidHeight = h;
+
+    video = document.getElementById('SubPlayerVideo');
+    video.src = file;
+    video.addEventListener('loadedmetadata', function () {
         console.log("IN LIBRARY: " + video.duration);
         var max = video.duration;
-        $('#control').html('<div id="allcontrols"><button onclick="startPlayVideo()">play</button><input onclick="onSeekBarClick()" type="range" id="seekbar" min="0" max="' + max + '" /><button onclick="makeFullScreen()">FullScreen</button></div>');
+        $('.control-SPJS').html('<div id="allcontrols" style="width: 100%;"><a href="#" style="bottom: 7px;" id="playpause" onclick="startPlayVideo()"><i class="material-icons" style="color: rgb(255, 255, 255);">play_arrow</i></a><span style="visibility:hidden"> | </span><input onclick="onSeekBarClick()" style="min-width: 80%; bottom: 9px;" type="range" id="seekbar" min="0" max="' + max + '" /><span style="visibility:hidden"> | </span><a href="#" style=" style="" onclick="makeFullScreen()"><i class="material-icons" style="font-size: 24px; color: rgb(255, 255, 255);">fullscreen</i></a></div>');
         $('#seekbar').val(0).css("width", "80%").css("right", "5px");
 
        
-        $('.video-overlay').on("change mousemove", function () {
+        $('.outer-container-SPJS').on("change mousemove", function () {
             if (!guiIsvisible) {
-               
+               $('.outer-container-SPJS').css({ cursor: "auto"});
                 guiIsvisible = true;
                 console.log("GUI TOGGLE FIRST TIME");
                 $('#allcontrols').fadeToggle();
-                setTimeout(function () { $('#allcontrols').fadeToggle(); guiIsvisible = false; console.log("GUI TOGGLE SECOND TIME"); }, 4000);
+                setTimeout(function () { $('#allcontrols').fadeToggle(); $('.outer-container-SPJS').css({ cursor: "none"}); guiIsvisible = false; console.log("GUI TOGGLE SECOND TIME"); }, 4000);
             } 
         });
 
 
+
+        if(subtitle != "" && subtitle != null && subtitle != 0){            
+            setSubtitle(subtitle);
+        } else {
+            subtitleIsSet = false;
+        }
+
         $('#allcontrols').hide();
+
+        setTimeout(function(){
+            setInterval(function(){if(!isSeeking){$('#seekbar').val(video.currentTime);}}, 500);
+        }, 0);
+
+        video.onseeking = function () {        
+            isSeeking = true;
+        }
+
+        getTimeStamp();
     });
   
 }
@@ -48,9 +118,13 @@ function LoadSubPlayerJS(file, subtitle, div, w, h) {
 function startPlayVideo() {
     if (!isPlaying) {
         video.play();
+
+        $('#playpause').html('<i class="material-icons" style="color: rgb(255, 255, 255);">pause</i>');
         isPlaying = true;
     } else {
         video.pause();
+
+        $('#playpause').html('<i class="material-icons" style="color: rgb(255, 255, 255);">play_arrow</i>');
         isPlaying = false;
     }
 }
@@ -62,7 +136,7 @@ function onSeekBarClick() {
 }
 
 function makeFullScreen() {
-    var i = document.getElementsByClassName("outer-container")[0];
+    var i = document.getElementsByClassName("outer-container-SPJS")[0];
 
     // go full-screen
     if (i.requestFullscreen) {
@@ -75,7 +149,9 @@ function makeFullScreen() {
         i.msRequestFullscreen();
     }
     if (!isFullScreen) {
-        $('#video').css({
+        console.log("going into fullscreen");
+
+         $('#SubPlayerVideo').css({
             position: 'fixed', //or fixed depending on needs 
             top: 0,
             left: 0,
@@ -83,7 +159,7 @@ function makeFullScreen() {
             width: '100%'
         });
 
-        $('.video-overlay').css({
+        $('.video-overlay-SPJS').css({
             position: 'fixed', //or fixed depending on needs 
             top: '85%',
             left: 0,
@@ -91,12 +167,17 @@ function makeFullScreen() {
             width: '100%'
         });
 
-        $('html, body').animate({
-            scrollTop: $('#video').offset().top
-        }, 'slow');
+        $('.control-SPJS').css({
+            position: 'fixed', //or fixed depending on needs 
+            top: '85%',
+            left: 0,
+            height: '100%',
+            width: '100%'
+        });
+
         isFullScreen = true;
     } else {
-
+        console.log("exiting fullscreen");
         if (document.exitFullscreen) {
             document.exitFullscreen();
         } else if (document.webkitExitFullscreen) {
@@ -107,12 +188,21 @@ function makeFullScreen() {
             document.msExitFullscreen();
         }
 
-        $('#video').css({
+        $('#SubPlayerVideo').css({
             position: 'relative',
             width: '100%'
         });
 
-        $('.video-overlay').css({
+        $('.video-overlay-SPJS').css({
+            position: 'absolute', //or fixed depending on needs 
+            top: '85%',
+            left: 0,
+            height: '100%',
+            width: '100%'
+        });
+
+
+        $('.control-SPJS').css({
             position: 'absolute', //or fixed depending on needs 
             top: '85%',
             left: 0,
@@ -125,58 +215,66 @@ function makeFullScreen() {
 }
 
 
-function getSubtitle(subtitleurl) {
-
+function setSubtitle(subtitleurl) {
+    var extension = subtitleurl.replace(/^.*\./, '');
     $.ajax({
         url: subtitleurl,
         type: 'get',
         async: false,
-        success: function (data) {
-            var lines = data.split("\n");
-            $.each(lines, function (key, line) {
-                if (line.indexOf("Dialogue") > -1) {
-                    var parts = line.split(',');
-                    parts[parts.indexOf(parts[1])] = timeStampToSeconds(parts[1]);
-                    parts[parts.indexOf(parts[2])] = timeStampToSeconds(parts[2]);
-                    subtitleArray.push(parts);
-                }
-            });
-            console.log("Succesfully read subtitle!");
-            subtitleIsSet = true;
+        success: function (data) {           
+            switch(extension){
+                case "ass":
+                    console.log("SubPlayerJS: SSA (SubStationAlpha) Supported!");
+                    parseSubStationAlpha(data);
+                    break;
+                case "srt":
+                    console.log("SubPlayerJS: Comming soon!");
+                    break;
+                case "vtt":
+                    console.log("SubPlayerJS: Comming soon!");
+                    break;
+                case "sub":
+                     console.log("SubPlayerJS: Maybe supported in future!");
+                    break;
+                case "smi":
+                    console.log("SubPlayerJS: Maybe supported in future!");
+                    break;
+                case "usf":
+                    console.log("SubPlayerJS: Maybe supported in future!");
+                    break;
+                default:
+                    console.log("SubPlayerJS: Subtitle with extension: " + extension + " is NOT supported!");
+                    break;
+            }
+            console.log("SubPlayerJS: Succesfully read subtitle!");
         },
         error: function (err) {
+            console.log("SubPlayerJS: FAILED TO LOAD SUBTITLE: " + err);
             subtitleIsSet = false;
         }
     });
+}
 
-    if (subtitleIsSet) {
-        console.log("Starting timer");
-        getTimeStamp();
 
-        video.onseeking = function () {
-            var index = 0;
-            var time = video.currentTime;
-            $.each(subtitleArray, function (curText) {
-                var timeStart = curText[1];
-                var timeEnd = curText[2];
-                console.log("INDEX SEARCH ON TIMESTART: " + timeStart + ", TIMEEND: " + timeEnd + " WITH CURRENT TIME: " + curText);
-                if (time > timeStart && time < timeEnd) {
-                    console.log("FOUND SUB POS AT: " + index);
-                    lineNumber = index;
-                    return index;
-                } else {
-                    index++;
-                }
+function parseSubStationAlpha(ssa){
 
-            });
+    var lines = ssa.split("\n");
+    $.each(lines, function (key, line) {
+        if (line.indexOf("Dialogue") > -1) {
+            var parts = line.split(',');
+            parts[parts.indexOf(parts[1])] = timeStampToSeconds(parts[1]);
+            parts[parts.indexOf(parts[2])] = timeStampToSeconds(parts[2]);
+            subtitleArray.push(parts);
         }
-    }
-    return subtitleIsSet;
+    });
+
+   
+
+    subtitleIsSet = true;
+
 }
 
 function resetSubtitle() {
-    subtitleIsSet = false;
-    subtitleArray = [];
     $('#subtitle').html('');
     try{
         clearInterval(interval);
@@ -196,39 +294,76 @@ function timeStampToSeconds(timestamp) {
 
 function getTimeStamp() {
     interval = setInterval(function () {
-        if (video.ended) {
-            clearInterval(interval);
-        }
-        var curTimeSecond = vid.currentTime;
+        var curTimeSecond = video.currentTime;
         currentTime = curTimeSecond;
-        setTimeout(showSubtitle(curTimeSecond), 0);
+        if(subtitleIsSet){            
+            setTimeout(showSubtitle(curTimeSecond), 0);       
+        } 
     }, 100);
 }
 
 function showSubtitle(time) {
-    
-    try{
-        var currentText = subtitleArray[lineNumber];
-        var secondOfTimeStart = currentText[1];
-        var secondOfTimeEnd = currentText[2];
-       
-        if (time < secondOfTimeStart) {
-            $('#subtitle').html('');
-        } else {
+    var localArray = subtitleArray;
+    if(!isSeeking){
+         try{
 
-            if (time > secondOfTimeEnd) {
-                lineNumber++;
+
+            var currentText = localArray[lineNumber];
+            var secondOfTimeStart = currentText[1];
+            var secondOfTimeEnd = currentText[2];
+           
+            if (time < secondOfTimeStart) {
+                $('#subtitle').html('');
             } else {
-                var fullText = "";
-                for (var i = 9; i < currentText.length; i++) {
-                    fullText = fullText + "," + currentText[i];
+                if (time > secondOfTimeEnd) {
+                    lineNumber++;
+                } else {
+                    var fullText = "";
+                    for (var i = 9; i < currentText.length; i++) {
+                        fullText = fullText + "," + currentText[i];
+                    }
+                    $('#subtitle').html(fullText.substring(1).replace("\\N", "<br />"));
                 }
-                $('#subtitle').html(fullText.substring(1).replace("\\N", "<br />"));
             }
+        } catch (e) {
+            console.log("something went wrong while reading subtitle at time stamp: " );
+            console.log("CURRENT: " + time);
+            console.log("ERROR: " + e);
         }
-    } catch (e) {
-        clearInterval(interval);
+    } else {
+        var index = 0;
+        $('#subtitle').html('');
+        var arrayLength = localArray.length;
+        for(var i = 0; i < arrayLength; i++){
+            var timeStart = parseInt(localArray[i][1]);
+            var timeEnd = parseInt(localArray[i][2]);
+            //console.log("SubPlayerJS: INDEX SEARCH ON TIMESTART: " + timeStart + ", TIMEEND: " + timeEnd + " WITH CURRENT TIME: " + time);
+            //console.log(localArray);
+
+            if (time > timeStart) {
+                //console.log("SubPlayerJS: INDEX SEARCH ON TIMESTART: " + timeStart + ", TIMEEND: " + timeEnd + " WITH CURRENT TIME: " + time);
+                //console.log("SubPlayerJS: FOUND SUB POS AT: " + i);
+                lineNumber = i;
+            } 
+        }
+        isSeeking = false;
     }
+   
     
 }
         
+function loadjscssfile(filename, filetype){
+    if (filetype=="js"){ //if filename is a external JavaScript file
+        var fileref=document.createElement('script')
+        fileref.setAttribute("type","text/javascript")
+        fileref.setAttribute("src", filename)
+    }
+    else if (filetype=="css"){ //if filename is an external CSS file
+        var fileref=document.createElement("link")
+        fileref.setAttribute("rel", "stylesheet")
+        fileref.setAttribute("type", "text/css")
+        fileref.setAttribute("href", filename)
+    }
+    if (typeof fileref!="undefined")
+        document.getElementsByTagName("head")[0].appendChild(fileref)
+}
