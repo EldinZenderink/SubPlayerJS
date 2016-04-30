@@ -31,7 +31,7 @@ You just have to include this library by pasting the following tag in your html 
 
 Or in case you want to use CDN (Development Version):
 
-`<script type="text/javascript" src="https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubtitlePlayer.js" ></script>`
+`<script type="text/javascript" src="https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.js" ></script>`
 
 Or in case you want to use CDN (Stable Version):
 
