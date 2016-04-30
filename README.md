@@ -7,7 +7,9 @@ My goal for this project is a universal subtitle video player that supports most
 
 ### Version
 0.0.1 - initial release
+
 0.1.0 - stable working release:
+
     -   fixed bug when skipping backwards subtitle would dissapear
     -   jQuery auto dynamic load added
     -   Materializecss stylsheet auto dynamic load added
