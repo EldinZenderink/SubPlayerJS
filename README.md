@@ -19,6 +19,7 @@ SubPlayerJS uses a number of open source projects to work properly:
 * [RawGit](https://rawgit.com/) - making CDN through GitHub available
 
 **Scripts:**
+* [MaterializeCSS](http://materializecss.com/) - awesome css framwork
 * [Material Icons](https://design.google.com/icons/) - awesome free icons
 * [jQuery](https://jquery.com/) - duh
 
