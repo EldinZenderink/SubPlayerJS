@@ -29,9 +29,13 @@ You just have to include this library by pasting the following tag in your html 
 
 `<script type="text/javascript" src="/path/to/SubPlayerJS.js" ></script>`
 
-Or in case you want to use CDN:
+Or in case you want to use CDN (Development Version):
 
-`<script type="text/javascript" src="NOT YET" ></script>`
+`<script type="text/javascript" src="https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubtitlePlayer.js" ></script>`
+
+Or in case you want to use CDN (Stable Version):
+
+** * NOT YET * **
 
 Loading a video is very easy:
 
