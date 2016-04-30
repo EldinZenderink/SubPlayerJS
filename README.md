@@ -7,6 +7,10 @@ My goal for this project is a universal subtitle video player that supports most
 
 ### Version
 0.0.1 - initial release
+0.1.0 - stable working release:
+    -   fixed bug when skipping backwards subtitle would dissapear
+    -   jQuery auto dynamic load added
+    -   Materializecss stylsheet auto dynamic load added
 
 ### How and Why
 The library loads the video object once dynamically on your page, you only need to make a empty div tag or something simular with a specific ID for the video player (see instructions below). This player is build upon the HTML5 video tag, featuring it's own layout (very simular to the stock HTML5 video player). This is necesary because otherwise fullscreen playback wouldn't work. Furthermore, this library uses Material Icons for its video player icons. The library will dynamically load the style sheet, if you did not do that already. Same goes for jQuery!
