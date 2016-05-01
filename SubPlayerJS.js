@@ -13,29 +13,9 @@ var subtitleArray = [];
 var isSeeking = false;
 var video;
 !window.jQuery && document.write(unescape('%3Cscript src="https://code.jquery.com/jquery-2.1.1.min.js"%3E%3C%2Fscript%3E'))
-/*
-try{
-    $('body').append("");
-} catch (e){
-    console.log("SubPlayer: jQuery not in header, appending now!");
-    
-    loadScript("https://code.jquery.com/jquery-2.1.1.min.js", function(){ 
-        while(true){
-            try{
-                $('body').append("");
-                break;
-            } catch(e){
-                console.log('not loaded yet');
-            }
-        }});
-
-}*/
 
 //loads video
 function LoadSubPlayerJS(file, subtitle, div, w, h) {
-
-
-    
 
     resetSubtitle();
 
@@ -96,9 +76,8 @@ function LoadSubPlayerJS(file, subtitle, div, w, h) {
             if (!guiIsvisible) {
                $('.outer-container-SPJS').css({ cursor: "auto"});
                 guiIsvisible = true;
-                console.log("GUI TOGGLE FIRST TIME");
                 $('#allcontrols').fadeToggle();
-                setTimeout(function () { $('#allcontrols').fadeToggle(); $('.outer-container-SPJS').css({ cursor: "none"}); guiIsvisible = false; console.log("GUI TOGGLE SECOND TIME"); }, 4000);
+                setTimeout(function () { $('#allcontrols').fadeToggle(); $('.outer-container-SPJS').css({ cursor: "none"}); guiIsvisible = false; }, 4000);
             } 
         });
 
