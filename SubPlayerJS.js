@@ -14,7 +14,7 @@ var isSeeking = false;
 var video;
 
 
-!window.jQuery && document.write(unescape('%3Cscript src="https://code.jquery.com/jquery-2.1.1.min.js'))
+!window.jQuery && document.write(unescape('%3Cscript src="https://code.jquery.com/jquery-2.1.1.min.js%3E%3C%2Fscript%3E'))
 /*
 try{
     $('body').append("");
