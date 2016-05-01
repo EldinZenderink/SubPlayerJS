@@ -160,7 +160,7 @@ function makeFullScreen() {
             position: 'fixed', //or fixed depending on needs 
             top: '85%',
             left: 0,
-            height: '100%',
+            height: '32px',
             width: '100%'
         });
 
@@ -195,7 +195,7 @@ function makeFullScreen() {
             position: 'absolute', //or fixed depending on needs 
             top: '85%',
             left: 0,
-            height: '100%',
+            height: '32px',
             width: '100%'
         });
         isFullScreen = false;
