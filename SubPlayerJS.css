@@ -33,7 +33,12 @@
     top: 90%;
     padding: 5px 5px;
     color: white;
-    background: rgba(0, 0, 0, 0.5);
     font-size: 24pt;
-    border-radius: 2px;
+}
+
+#allcontrol{
+    
+    border-radius: 2px;        
+    background: rgba(0, 0, 0, 0.5);            
+
 }
