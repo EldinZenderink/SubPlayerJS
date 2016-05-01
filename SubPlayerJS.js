@@ -12,6 +12,10 @@ var isFullScreen = false;
 var subtitleArray = [];
 var isSeeking = false;
 var video;
+
+
+!window.jQuery && document.write(unescape('%3Cscript src="https://code.jquery.com/jquery-2.1.1.min.js'))
+/*
 try{
     $('body').append("");
 } catch (e){
@@ -27,7 +31,7 @@ try{
             }
         }});
 
-}
+}*/
 
 //loads video
 function LoadSubPlayerJS(file, subtitle, div, w, h) {
