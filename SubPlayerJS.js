@@ -16,10 +16,18 @@ try{
     $('body').append("");
 } catch (e){
     console.log("SubPlayer: jQuery not in header, appending now!");
-    loadjscssfile("https://code.jquery.com/jquery-2.1.1.min.js", "js");
+    
+    loadScript("https://code.jquery.com/jquery-2.1.1.min.js", function(){ 
+        while(true){
+            try{
+                $('body').append("");
+                break;
+            } catch(e){
+                console.log('not loaded yet');
+            }
+        }});
+
 }
-
-
 
 //loads video
 function LoadSubPlayerJS(file, subtitle, div, w, h) {
@@ -366,4 +374,21 @@ function loadjscssfile(filename, filetype){
     }
     if (typeof fileref!="undefined")
         document.getElementsByTagName("head")[0].appendChild(fileref)
+}
+
+function loadScript(url, callback)
+{
+    // Adding the script tag to the head as suggested before
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+
+    // Then bind the event to the callback function.
+    // There are several events for cross browser compatibility.
+    script.onreadystatechange = callback;
+    script.onload = callback;
+
+    // Fire the loading
+    head.appendChild(script);
 }
