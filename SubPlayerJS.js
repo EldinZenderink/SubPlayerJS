@@ -69,7 +69,7 @@ function LoadSubPlayerJS(file, subtitle, div, w, h) {
              <div class="outer-container-SPJS ">\
                 <div class="inner-container-SPJS ">\
                     <div class="video-overlay-SPJS" id="subtitle"><br /></div>\
-                    <div style="min-width: 100%; min-height: 100%;" class="control-SPJS"></div>\
+                    <div style="min-width: 100%;" class="control-SPJS"></div>\
                     <video id="SubPlayerVideo" width="' + vidwidth + '" height="' + vidheight + '">\
                     <source id="videoSource" src="">\
                         Your browser does not support HTML5 video.\
