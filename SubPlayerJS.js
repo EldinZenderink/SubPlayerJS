@@ -12,6 +12,12 @@ var isFullScreen = false;
 var subtitleArray = [];
 var isSeeking = false;
 var video;
+try{
+    $('body').append("");
+} catch (e){
+    console.log("SubPlayer: jQuery not in header, appending now!");
+    loadjscssfile("https://code.jquery.com/jquery-2.1.1.min.js", "js");
+}
 
 
 
@@ -39,13 +45,7 @@ function LoadSubPlayerJS(file, subtitle, div, w, h) {
     }
 
     if(!videoPlayerLoaded || previousVidHeight != h || previousVidWidth != w){
-        try{
-            $('body').append("");
-        } catch (e){
-            console.log("SubPlayer: jQuery not in header, appending now!");
-            loadjscssfile("https://code.jquery.com/jquery-2.1.1.min.js", "js");
-        }
-
+      
         if (!$("link[href='http://fonts.googleapis.com/icon?family=Material+Icons']").length){ 
             loadjscssfile("http://fonts.googleapis.com/icon?family=Material+Icons", "css");
         }
