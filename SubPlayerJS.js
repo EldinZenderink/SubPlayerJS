@@ -11,34 +11,9 @@ var isPlaying = false;
 var isFullScreen = false;
 var isSubtitleEnabled = true;
 var isSeeking = false;
-<<<<<<< HEAD
-var video;
 
-!window.jQuery && document.write(unescape('%3Cscript src="https://code.jquery.com/jquery-2.1.1.min.js"%3E%3C%2Fscript%3E'))
-/*
-try{
-    $('body').append("");
-} catch (e){
-    console.log("SubPlayer: jQuery not in header, appending now!");
-    
-    loadScript("https://code.jquery.com/jquery-2.1.1.min.js", function(){ 
-        while(true){
-            try{
-                $('body').append("");
-                break;
-            } catch(e){
-                console.log('not loaded yet');
-            }
-        }});
-
-}*/
-
-//loads video
-function LoadSubPlayerJS(file, subtitle, div, w, h) {
-=======
 var subtitleArray = [];
 var ammountOfVideos = 0;
->>>>>>> refs/remotes/origin/master
 
 
 
