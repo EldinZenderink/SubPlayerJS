@@ -1,0 +1,24 @@
+<html>
+<head>
+<title> Demo Player </title>
+<script type="text/javascript" src="SubPlayerJS.js" ></script>
+</head>
+<body>
+<center>
+ <div id="divIDwhereVideoPlayerWillBeLoaded"></div> 
+ <br />
+ <div id="divIDwhereVideoPlayerWillBeLoaded2"></div> 
+</center>
+ <br />
+ <center> Movie by <b><a href="https://durian.blender.org/">The Blender Foundation & Durian</a></b> </center>
+<script>
+
+	var newPlayer = new SubPlayerJS('#divIDwhereVideoPlayerWillBeLoaded', 'http://peach.themazzone.com/durian/movies/sintel-1280-surround.mp4');
+	newPlayer.setSubtitle('https://raw.githubusercontent.com/EldinZenderink/SubPlayerJS/master/DemoSubtitle/sintel.ass'); 
+
+	var newPlayer2 = new SubPlayerJS('#divIDwhereVideoPlayerWillBeLoaded2', 'http://peach.themazzone.com/durian/movies/sintel-1280-surround.mp4');
+	newPlayer2.setSubtitle('https://raw.githubusercontent.com/EldinZenderink/SubPlayerJS/master/DemoSubtitle/sintel.ass'); 
+   // LoadSubPlayerJS('http://peach.themazzone.com/durian/movies/sintel-1280-surround.mp4', 'https://raw.githubusercontent.com/EldinZenderink/SubPlayerJS/master/DemoSubtitle/sintel.ass', '#divIDwhereVideoPlayerWillBeLoaded');
+</script>
+</body>
+</html>
