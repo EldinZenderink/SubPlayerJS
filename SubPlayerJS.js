@@ -50,7 +50,7 @@ class SubPlayerJS {
         if (!$("link[href='https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css']").length) {
             loadjscssfile("https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css", "css");
         }
-        $('#enableSub_' + videoid.toString()).html('<i class="material-icons" style="color: rgb(96, 96, 96);">subtitles</i>');
+        
         ammountOfVideos++;
         subtitleArray.push([]);
         this.loadVideo(ammountOfVideos);
@@ -122,7 +122,7 @@ class SubPlayerJS {
                         </div>');
             this.videoPlayerLoaded = true;
         }
-
+        $('#enableSub_' + videoid.toString()).html('<i class="material-icons" style="color: rgb(96, 96, 96);">subtitles</i>'); 
         this.previousVidWidth = this.videoWidth;
         this.previousVidHeight = this.videoHeight;
 
