@@ -50,7 +50,7 @@ class SubPlayerJS {
         if (!$("link[href='https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css']").length) {
             loadjscssfile("https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css", "css");
         }
-        
+        $('#enableSub_' + videoid.toString()).html('<i class="material-icons" style="color: rgb(96, 96, 96);">subtitles</i>');
         ammountOfVideos++;
         subtitleArray.push([]);
         this.loadVideo(ammountOfVideos);
@@ -196,12 +196,16 @@ class SubPlayerJS {
                     default:
                         console.log("SubPlayerJS: Subtitle with extension: " + extension + " is NOT supported!");
                         break;
-                }
+                  
+                  }
+                   $('#enableSub_' + videoid.toString()).html('<i class="material-icons" style="color: rgb(255, 255, 255);">subtitles</i>');
                 console.log("SubPlayerJS: Succesfully read subtitle!");
             },
             error: function(err) {
-                console.log("SubPlayerJS: FAILED TO LOAD SUBTITLE: " + err);
-                this.subtitleIsSet = false;
+               console.log("SubPlayerJS: FAILED TO LOAD SUBTITLE: " + err);
+               this.subtitleIsSet = false;
+               this.isSubtitleEnabled = false;
+               $('#enableSub_' + videoid.toString()).html('<i class="material-icons" style="color: rgb(96, 96, 96);">subtitles</i>');
             }
         });
     }
