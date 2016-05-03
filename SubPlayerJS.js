@@ -44,8 +44,8 @@ class SubPlayerJS {
         if (!$("link[href='http://fonts.googleapis.com/icon?family=Material+Icons']").length) {
             loadjscssfile("http://fonts.googleapis.com/icon?family=Material+Icons", "css");
         }
-        if (!$("link[href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css']").length) {
-            loadjscssfile("https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css", "css");
+        if (!$("link[href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css']").length) {
+            loadjscssfile("https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css", "css");
         }
         if (!$("link[href='https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css']").length) {
             loadjscssfile("https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css", "css");
