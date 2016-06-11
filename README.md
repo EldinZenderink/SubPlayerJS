@@ -20,6 +20,11 @@ My goal for this project is a universal subtitle video player that supports most
     -   due to above change multiple videos can now be initialized with their own subtitles
     -   outer div of video container is now size of video instead of screen (necessary for full screen mode)
 
+0.3.0
+
+    -   SubRip (.srt) is now supported!
+    -   Bug Fix: Subtitle would not show up when you seek after the last sentence of a subtitle has been shown. 
+
 ### Demo
 You can find a demo here: [http://eldinzenderink.github.io/SubPlayerJS/demo.html](http://eldinzenderink.github.io/SubPlayerJS/demo.html#)
 
@@ -89,7 +94,7 @@ Development will continue in my spare time. I am a bussy student, so this will m
 
  - bug fixes/testing
  - add support for dynamic resizing
- - add support for others subtitle formats than '.ass (SubStationAlpha'
+ - add support for more subtitle formats (now: .ass, .srt)
  - interface improvements
  - multitrack support
  - styling support :(basic *Italic* and/or **Bold** support for simple text-based subtitles such as '.srt', advanced styling support for '.ass(SubStationAlpha)';
