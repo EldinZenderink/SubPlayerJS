@@ -444,7 +444,6 @@ class SubPlayerJS {
                 width: '100%'
             });
 
-
             $('#controlDiv_' + videoid.toString()).css({
                 position: 'absolute', //or fixed depending on needs 
                 top: '85%',
