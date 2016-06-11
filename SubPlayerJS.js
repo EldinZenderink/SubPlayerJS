@@ -44,11 +44,11 @@ class SubPlayerJS {
         if (!$("link[href='http://fonts.googleapis.com/icon?family=Material+Icons']").length) {
             loadjscssfile("http://fonts.googleapis.com/icon?family=Material+Icons", "css");
         }
-        if (!$("link[href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css']").length) {
-            loadjscssfile("https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css", "css");
+        if (!$("link[href='SubPlayerJS.css']").length) {
+            loadjscssfile("SubPlayerJS.css", "css");
         }
-        if (!$("link[href='https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css']").length) {
-            loadjscssfile("https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css", "css");
+        if (!$("link[href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css']").length) {
+            loadjscssfile("https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css", "css");
         }
         
         ammountOfVideos++;
@@ -122,7 +122,7 @@ class SubPlayerJS {
                         </div>');
             this.videoPlayerLoaded = true;
         }
-        $('#enableSub_' + videoid.toString()).html('<i class="material-icons" style="color: rgb(96, 96, 96);">subtitles</i>'); 
+
         this.previousVidWidth = this.videoWidth;
         this.previousVidHeight = this.videoHeight;
 
@@ -144,11 +144,8 @@ class SubPlayerJS {
                     }
                 }, 1000);
             }, 0);
-
-            subPlayerVideo.onseeking = function() {
-                this.isSeeking = true;
-            }
         });
+
         $('#outerContainer_' + videoid.toString()).on("change mousemove", function() {
             $('#outerContainer_' + videoid.toString()).css({
                 cursor: "auto"
@@ -179,7 +176,9 @@ class SubPlayerJS {
                         SubPlayerJS.parseSubStationAlpha(data, videoid);
                         break;
                     case "srt":
-                        console.log("SubPlayerJS: Comming soon!");
+
+                        console.log("SubPlayerJS: SRT (SubRip) Supported!");
+                        SubPlayerJS.parseSubRip(data, videoid);
                         break;
                     case "vtt":
                         console.log("SubPlayerJS: Comming soon!");
@@ -196,86 +195,106 @@ class SubPlayerJS {
                     default:
                         console.log("SubPlayerJS: Subtitle with extension: " + extension + " is NOT supported!");
                         break;
-                  
-                  }
-                   $('#enableSub_' + videoid.toString()).html('<i class="material-icons" style="color: rgb(255, 255, 255);">subtitles</i>');
+                }
                 console.log("SubPlayerJS: Succesfully read subtitle!");
             },
             error: function(err) {
-               console.log("SubPlayerJS: FAILED TO LOAD SUBTITLE: " + err);
-               this.subtitleIsSet = false;
-               this.isSubtitleEnabled = false;
-               $('#enableSub_' + videoid.toString()).html('<i class="material-icons" style="color: rgb(96, 96, 96);">subtitles</i>');
+                console.log("SubPlayerJS: FAILED TO LOAD SUBTITLE: " + err);
+                this.subtitleIsSet = false;
             }
         });
     }
 
     getTimeStamp(videoid) {
-         console.log('SubPlayerVideo_' + videoid);
         var subPlayerVideo = SubPlayerJS.getVideo(videoid);
         var that = this;
         this.interval = setInterval(function() {
             var curTimeSecond = subPlayerVideo.currentTime;
             this.currentTime = curTimeSecond;
             setTimeout(that.showSubtitle(curTimeSecond, videoid), 0);
-        }, 100);
+        }, 50);
     }
 
     showSubtitle(time, videoid) {
         var localArray = subtitleArray[videoid - 1];
-        if (!this.isSeeking) {
-            try {
-                var currentText = localArray[this.lineNumber];
-                var secondOfTimeStart = currentText[1];
-                var secondOfTimeEnd = currentText[2];
+        try {
+            var currentText = localArray[this.lineNumber];
+            var secondOfTimeStart = currentText[0];
+            var secondOfTimeEnd = currentText[1];
 
-                if (time < secondOfTimeStart) {
-                    $('#subtitle_' + videoid.toString()).html('');
-                } else {
-                    if (time > secondOfTimeEnd) {
-                        this.lineNumber++;
-                    } else {
-                        var fullText = "";
-                        for (var i = 9; i < currentText.length; i++) {
-                            fullText = fullText + "," + currentText[i];
-                        }
-                        $('#subtitle_' + videoid.toString()).html(fullText.substring(1).replace("\\N", "<br />"));
-                        console.log("WRTING SUBTITLE TO VIDID: " + videoid + ", TEXT: " + fullText.substring(1).replace("\\N", "<br />"));
+            if (time < secondOfTimeStart) {
+                console.log("SEEKED");
+                var index = 0;
+                this.lineNumber = 0;
+                $('#subtitle_' + videoid.toString()).html('');
+                var arrayLength = localArray.length;
+                for (var i = 0; i < arrayLength; i++) {
+                    var timeStart = parseInt(localArray[i][0]);
+                    var timeEnd = parseInt(localArray[i][1]);
+
+                    if (time > timeStart) {
+                        this.lineNumber = i;
+                        break;
                     }
                 }
-            } catch (e) {
-                console.log("something went wrong while reading subtitle at time stamp: ");
-                console.log("CURRENT: " + time);
-                console.log("ERROR: " + e);
-            }
-        } else {
-            var index = 0;
-            $('#subtitle_' + videoid.toString()).html('');
-            var arrayLength = localArray.length;
-            for (var i = 0; i < arrayLength; i++) {
-                var timeStart = parseInt(localArray[i][1]);
-                var timeEnd = parseInt(localArray[i][2]);
-
-                if (time > timeStart) {
-                    this.lineNumber = i;
+                $('#subtitle_' + videoid.toString()).html('');
+            } else {
+                if (time > secondOfTimeEnd) {
+                    this.lineNumber++;
+                    $('#subtitle_' + videoid.toString()).html('');
+                } else {
+                    var fullText = currentText[2];
+                    $('#subtitle_' + videoid.toString()).html(fullText.substring(0, fullText.length - 1).replace("\\N", "<br />"));
                 }
             }
-            this.isSeeking = false;
+        } catch (e) {
+            try{
+                 var index = 0;
+                this.lineNumber = 0;
+                $('#subtitle_' + videoid.toString()).html('');
+                var arrayLength = localArray.length;
+                for (var i = 0; i < arrayLength; i++) {
+                    var timeStart = parseInt(localArray[i][0]);
+                    var timeEnd = parseInt(localArray[i][1]);
+
+                    if (time > timeStart) {
+                        this.lineNumber = i;
+                        break;
+                    }
+                }
+            } catch (e){
+
+              
+            }
         }
 
     }
 
     static getVideo(ammount){
-        console.log('SubPlayerVideo_' + ammount);
+        //console.log('SubPlayerVideo_' + ammount);
         return document.getElementById('SubPlayerVideo_' + ammount);
     }
 
-    static timeStampToSeconds(timestamp) {
-        var parts = timestamp.split(':');
-        var hour = parts[0];
-        var minute = parts[1];
-        var second = parts[2];
-        var totalSeconds = hour * 3600 + minute * 60 + parseInt(second);
+    static timeStampToSeconds(timestamp, fileType) {
+        var totalSeconds = 0;
+        console.log("TIMESTAMP: " + timestamp);
+        switch(fileType){
+            case "ass":
+                var parts = timestamp.split(':');
+                var hour = parts[0];
+                var minute = parts[1];
+                var second = parts[2];
+                totalSeconds = hour * 3600 + minute * 60 + parseInt(second);
+                break;
+            case "srt":
+                var parts = timestamp.split(':');
+                var hour = parts[0];
+                var minute = parts[1];
+                var second = parts[2].split('\r\n')[0];
+                totalSeconds = hour * 3600 + minute * 60 + parseInt(second);
+                break;
+        }
+        
         return totalSeconds;
     }
 
@@ -284,14 +303,43 @@ class SubPlayerJS {
         $.each(lines, function(key, line) {
             if (line.indexOf("Dialogue") > -1) {
                 var parts = line.split(',');
-                parts[parts.indexOf(parts[1])] = SubPlayerJS.timeStampToSeconds(parts[1]);
-                parts[parts.indexOf(parts[2])] = SubPlayerJS.timeStampToSeconds(parts[2]);
+                parts[0] = SubPlayerJS.timeStampToSeconds(parts[1], "ass");
+                parts[1] = SubPlayerJS.timeStampToSeconds(parts[2], "ass");
+                var text = "";
+                for(var i = 9; i < line.split(',').length; i++){
+                    text = text + line.split(',')[i] + ",";
+                }
+                parts[2] = text;
+
+                for(var i = 3; i < line.split(',').length; i++){
+                    parts[i] = "";
+                }
                 subtitleArray[videoid - 1].push(parts);
             }
         });
-        console.log("SUBARRAY FOR VIDID: " + videoid + " = " + subtitleArray[videoid - 1]);
         this.subtitleIsSet = true;
-    }   
+    } 
+
+    static parseSubRip(srt, videoid){
+        var lines = srt.split("\r\n\r\n");
+        $.each(lines, function(key, line) {
+            if (line.indexOf("-->") > -1) {
+                var parts = line.split('\r\n')[1].split('\r\n')[0].split('-->');
+                parts[0] = SubPlayerJS.timeStampToSeconds(parts[0], "srt");
+                parts[1] = SubPlayerJS.timeStampToSeconds(parts[1], "srt");
+
+                var text = "";
+                for(var i = 2; i < line.split('\r\n').length; i++){
+                    text = text + line.split('\r\n')[i] + "<br />";
+                }
+                parts[2] = text;
+                
+                console.log("parts: ");
+                console.log(parts);
+                subtitleArray[videoid - 1].push(parts);
+            }
+        });
+    }  
 
     static enaDisaSub(videoid) {
         if (this.isSubtitleEnabled) {
@@ -324,7 +372,7 @@ class SubPlayerJS {
     static onSeekBarClick(videoid) {
         var currentPosition = $('#seekbar_' + videoid.toString()).val();
         SubPlayerJS.getVideo(videoid).currentTime = currentPosition;
-        console.log(currentPosition);
+       // console.log(currentPosition);
         return false;
     }
 
@@ -395,6 +443,7 @@ class SubPlayerJS {
                 height: '',
                 width: '100%'
             });
+
 
             $('#controlDiv_' + videoid.toString()).css({
                 position: 'absolute', //or fixed depending on needs 
