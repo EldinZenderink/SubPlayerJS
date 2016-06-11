@@ -319,21 +319,19 @@ class SubPlayerJS {
     } 
 
     static parseSubRip(srt, videoid){
-        var lines = srt.split("\r\n\r\n");
+        var lines = srt.split(/[\r\n]+[\r\n]+/);
         $.each(lines, function(key, line) {
             if (line.indexOf("-->") > -1) {
-                var parts = line.split('\r\n')[1].split('\r\n')[0].split('-->');
+                var parts = line.split(/[\r\n]+/)[1].split(/[\r\n]+/)[0].split('-->');
                 parts[0] = SubPlayerJS.timeStampToSeconds(parts[0], "srt");
                 parts[1] = SubPlayerJS.timeStampToSeconds(parts[1], "srt");
 
+                
                 var text = "";
-                for(var i = 2; i < line.split('\r\n').length; i++){
-                    text = text + line.split('\r\n')[i] + "<br />";
+                for(var i = 2; i < line.split(/[\r\n]+/).length; i++){
+                    text = text + line.split(/[\r\n]+/)[i] + "<br />";
                 }
                 parts[2] = text;
-                
-                console.log("parts: ");
-                console.log(parts);
                 subtitleArray[videoid - 1].push(parts);
             }
         });
