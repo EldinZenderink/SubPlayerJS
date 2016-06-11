@@ -223,7 +223,7 @@ class SubPlayerJS {
             var secondOfTimeEnd = currentText[1];
 
             if (time < secondOfTimeStart) {
-                console.log("SEEKED");
+               
                 var index = 0;
                 this.lineNumber = 0;
                 $('#subtitle_' + videoid.toString()).html('');
@@ -271,13 +271,11 @@ class SubPlayerJS {
     }
 
     static getVideo(ammount){
-        //console.log('SubPlayerVideo_' + ammount);
         return document.getElementById('SubPlayerVideo_' + ammount);
     }
 
     static timeStampToSeconds(timestamp, fileType) {
         var totalSeconds = 0;
-        console.log("TIMESTAMP: " + timestamp);
         switch(fileType){
             case "ass":
                 var parts = timestamp.split(':');
