@@ -14,6 +14,20 @@ My goal for this project is a universal subtitle video player that supports most
     -   jQuery auto dynamic load added
     -   Materializecss stylsheet auto dynamic load added
 
+0.2.0
+
+    -   changed the way on how to initialize the player from calling a method to calling a class
+    -   due to above change multiple videos can now be initialized with their own subtitles
+    -   outer div of video container is now size of video instead of screen (necessary for full screen mode)
+
+0.3.0
+
+    -   SubRip (.srt) is now supported!
+    -   Bug Fix: Subtitle would not show up when you seek after the last sentence of a subtitle has been shown. 
+
+### Demo
+You can find a demo here: [http://eldinzenderink.github.io/SubPlayerJS/demo.html](http://eldinzenderink.github.io/SubPlayerJS/demo.html#)
+
 ### How and Why
 The library loads the video object once dynamically on your page, you only need to make a empty div tag or something simular with a specific ID for the video player (see instructions below). This player is build upon the HTML5 video tag, featuring it's own layout (very simular to the stock HTML5 video player). This is necesary because otherwise fullscreen playback wouldn't work. Furthermore, this library uses Material Icons for its video player icons. The library will dynamically load the style sheet, if you did not do that already. Same goes for jQuery!
 
@@ -40,27 +54,35 @@ Or in case you want to use CDN (Development Version):
 
 `<script type="text/javascript" src="https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.js" ></script>`
 
-Or in case you want to use CDN (Stable Version):
-
-** * NOT YET * **
-
 Loading a video is very easy:
 
 ```
+<html>
+<head>
+<title> Demo Player </title>
+
+<script type="text/javascript" src="https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.js" ></script>
+</head>
 <body>
-    <div id="divIDwhereVideoPlayerWillBeLoaded"></div>
-</body>
-
+<center>
+ <div id="divIDwhereVideoPlayerWillBeLoaded"></div> 
+ <br />
+ <div id="divIDwhereVideoPlayerWillBeLoaded2"></div> 
+</center>
+ <br />
+ <center> Movie by <b><a href="https://durian.blender.org/">The Blender Foundation & Durian</a></b> </center>
 <script>
-LoadSubPlayerJS('urltofile.mp4', 'urltosubtitle.ass', '#divIDwhereVideoPlayerWillBeLoaded', optionalWidth, optionalHeight);
+
+	var newPlayer = new SubPlayerJS('#divIDwhereVideoPlayerWillBeLoaded', 'http://peach.themazzone.com/durian/movies/sintel-1280-surround.mp4');
+	newPlayer.setSubtitle('https://raw.githubusercontent.com/EldinZenderink/SubPlayerJS/master/DemoSubtitle/sintel.ass'); 
+
+	var newPlayer2 = new SubPlayerJS('#divIDwhereVideoPlayerWillBeLoaded2', 'http://peach.themazzone.com/durian/movies/sintel-1280-surround.mp4');
+	newPlayer2.setSubtitle('https://raw.githubusercontent.com/EldinZenderink/SubPlayerJS/master/DemoSubtitle/sintel.ass'); 
+
 </script>
-```
+</body>
+</html>
 
-In case you want to get information from the video player, you can use the normal available video api provided by HTML5, using a custom ID used by SubPlayerJS video player:
-
-```
-var videoPlayer = document.getElementById('SubPlayerVideo');
-videoPlayer.Stop(); //etc
 ```
 
 In case you did not load any of the libraries mentioned under the *Tech* division of this document, the library will load these scripts dynamically for you!
@@ -71,7 +93,8 @@ Development will continue in my spare time. I am a bussy student, so this will m
 ### Todos
 
  - bug fixes/testing
- - add support for others subtitle formats than '.ass (SubStationAlpha'
+ - add support for dynamic resizing
+ - add support for more subtitle formats (now: .ass, .srt)
  - interface improvements
  - multitrack support
  - styling support :(basic *Italic* and/or **Bold** support for simple text-based subtitles such as '.srt', advanced styling support for '.ass(SubStationAlpha)';

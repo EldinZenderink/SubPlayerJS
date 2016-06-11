@@ -1,25 +1,42 @@
 <html>
 <head>
 <title> Demo Player </title>
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/master
 <script type="text/javascript" src="https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.js" ></script>
 </head>
 <body>
+
 <center>
+<h3> Sintel - SubStationAlpha - .ass </h3>
+<br /> 
  <div id="divIDwhereVideoPlayerWillBeLoaded"></div> 
  <br />
- <div id="divIDwhereVideoPlayerWillBeLoaded2"></div> 
+ Movie and subtitle by <b><a href="https://durian.blender.org/">The Blender Foundation & Durian</a></b> 
+
+<p>
+<h3> Inferno Trailer - SubRip - .srt </h3>
+</p>
+<div id="divIDwhereVideoPlayerWillBeLoaded2"></div> 
+<br />
+Trailer <b><a href="http://trailers.apple.com/trailers/sony_pictures/inferno/">Inferno</a> and subtitle ripped from: <a href="https://www.youtube.com/watch?v=XgyHgaWqrGo">Subtitled Trailers</a></b> 
 </center>
  <br />
- <center> Movie by <b><a href="https://durian.blender.org/">The Blender Foundation & Durian</a></b> </center>
+ 
 <script>
-
 	var newPlayer = new SubPlayerJS('#divIDwhereVideoPlayerWillBeLoaded', 'http://peach.themazzone.com/durian/movies/sintel-1280-surround.mp4');
-	newPlayer.setSubtitle('https://raw.githubusercontent.com/EldinZenderink/SubPlayerJS/master/DemoSubtitle/sintel.ass'); 
+	newPlayer.setSubtitle('https://raw.githubusercontent.com/EldinZenderink/SubPlayerJS/master/DemoSubtitle/sintel.ass');  
 
+<<<<<<< HEAD
 	var newPlayer2 = new SubPlayerJS('#divIDwhereVideoPlayerWillBeLoaded2', 'http://peach.themazzone.com/durian/movies/sintel-1280-surround.mp4');
 	newPlayer2.setSubtitle('https://raw.githubusercontent.com/EldinZenderink/SubPlayerJS/master/DemoSubtitle/sintel.ass'); 
 
+=======
+	var newPlayer2 = new SubPlayerJS('#divIDwhereVideoPlayerWillBeLoaded2', 'http://movietrailers.apple.com/movies/sony_pictures/inferno/inferno-tlr1_a720p.m4v');
+	newPlayer2.setSubtitle('https://github.com/EldinZenderink/SubPlayerJS/blob/master/DemoSubtitle/inferno.srt'); 
+>>>>>>> refs/remotes/origin/master
 </script>
 </body>
 </html>
