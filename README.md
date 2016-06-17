@@ -24,6 +24,10 @@ My goal for this project is a universal subtitle video player that supports most
 
     -   SubRip (.srt) is now supported!
     -   Bug Fix: Subtitle would not show up when you seek after the last sentence of a subtitle has been shown. 
+    
+0.4.0
+
+    -   Dynamic font loading for (Advanced)SubStationAlpha using [https://www.onlinewebfonts.com](https://www.onlinewebfonts.com) to search for fonts
 
 ### Demo
 You can find a demo here: [http://eldinzenderink.github.io/SubPlayerJS/demo.html](http://eldinzenderink.github.io/SubPlayerJS/demo.html#)
@@ -37,7 +41,9 @@ SubPlayerJS uses a number of open source projects to work properly:
 
 **Services:**
 * [RawGit](https://rawgit.com/) - making CDN through GitHub available
-
+* [https://www.onlinewebfonts.com](https://www.onlinewebfonts.com) - looking up fonts for (advanced)substationalpha subtitles
+* [https://crossorigin.me](https://crossorigin.me) - parsing onlinewebfonts html for font links (can't do cors to their site directly)
+ 
 **Scripts:**
 * [MaterializeCSS](http://materializecss.com/) - awesome css framwork
 * [Material Icons](https://design.google.com/icons/) - awesome free icons
@@ -97,7 +103,7 @@ Development will continue in my spare time. I am a bussy student, so this will m
  - add support for more subtitle formats (now: .ass, .srt)
  - interface improvements
  - multitrack support
- - styling support :(basic *Italic* and/or **Bold** support for simple text-based subtitles such as '.srt', advanced styling support for '.ass(SubStationAlpha)';
+ - styling support :(basic *Italic* and/or **Bold** support for simple text-based subtitles such as '.srt', advanced styling support for '.ass((Advanced)SubStationAlpha)';
 
 License
 ----

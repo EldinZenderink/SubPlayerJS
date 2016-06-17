@@ -1,4 +1,4 @@
-!window.jQuery && document.write(unescape('%3Cscript src="https://code.jquery.com/jquery-2.1.1.min.js"%3E%3C%2Fscript%3E'));
+!window.jQuery && document.write(unescape('%3Cscript src="https://code.jquery.com/jquery-2.1.1.min.js"%3E%3C%2Fscript%3E%3Cscript src="jquery.ajax-cross-origin.min.js"%3E%3C%2Fscript%3E'));
 
 //loads video
 var timeStamp = 0 + ":" + 0 + ":" + 0 + "." + 0;
@@ -13,13 +13,11 @@ var isSubtitleEnabled = true;
 var isSeeking = false;
 var subtitleArray = [];
 var ammountOfVideos = 0;
+var fontsArray = [];
 
 
 
 class SubPlayerJS {
-
-
-   
 
     constructor(div, file) {
         this.div = div;
@@ -53,6 +51,7 @@ class SubPlayerJS {
         
         ammountOfVideos++;
         subtitleArray.push([]);
+        fontsArray.push({});
         this.loadVideo(ammountOfVideos);
 
         this.videoid = ammountOfVideos;
@@ -217,6 +216,10 @@ class SubPlayerJS {
 
     showSubtitle(time, videoid) {
         var localArray = subtitleArray[videoid - 1];
+        var fonts = fontsArray[videoid - 1];
+        if(fonts.length < 1){
+            fonts["Default"] = "Verdana";
+        }
         try {
             var currentText = localArray[this.lineNumber];
             var secondOfTimeStart = currentText[0];
@@ -244,7 +247,13 @@ class SubPlayerJS {
                     $('#subtitle_' + videoid.toString()).html('');
                 } else {
                     var fullText = currentText[2];
-                    $('#subtitle_' + videoid.toString()).html(fullText.substring(0, fullText.length - 1).replace("\\N", "<br />"));
+                    var fontstyletouse;
+                    if(currentText[3] == null || currentText[3].length == 0){
+                        fontstyletouse = "Default";
+                    } else {
+                        fontstyletouse = currentText[3];
+                    }
+                    $('#subtitle_' + videoid.toString()).html('<div style="font-family: ' + fonts[fontstyletouse] + '">' + fullText.substring(0, fullText.length - 1).replace("\\N", "<br />") + '</div>');
                 }
             }
         } catch (e) {
@@ -297,6 +306,22 @@ class SubPlayerJS {
     }
 
     static parseSubStationAlpha(ssa, videoid) {
+        var fonts = {};
+        console.log(this.fonts);
+        var styling = ssa.split("Styles]")[1].split("[Events]")[0].split("\n");
+        $.each(styling, function(key, style) {
+           if(style.indexOf("Style:") > -1){
+                var information = style.split(':')[1].split(',');
+                var styletype = information[0].trim();
+                var font = information[1].trim();
+                console.log("STYLE TYPE = " + styletype + ", FONT: " + font);
+                fonts[styletype] = font;
+                fontsArray[videoid - 1] = fonts;
+               console.log(this.fonts);
+           }
+           
+        });
+        this.loadFont(videoid);
         var lines = ssa.split("\n");
         $.each(lines, function(key, line) {
             if (line.indexOf("Dialogue") > -1) {
@@ -308,8 +333,10 @@ class SubPlayerJS {
                     text = text + line.split(',')[i] + ",";
                 }
                 parts[2] = text;
+                
+                parts[3] = parts[3];
 
-                for(var i = 3; i < line.split(',').length; i++){
+                for(var i = 4; i < line.split(',').length; i++){
                     parts[i] = "";
                 }
                 subtitleArray[videoid - 1].push(parts);
@@ -319,21 +346,19 @@ class SubPlayerJS {
     } 
 
     static parseSubRip(srt, videoid){
-        var lines = srt.split("\r\n\r\n");
+        var lines = srt.split(/[\r\n]+[\r\n]+/);
         $.each(lines, function(key, line) {
             if (line.indexOf("-->") > -1) {
-                var parts = line.split('\r\n')[1].split('\r\n')[0].split('-->');
+                var parts = line.split(/[\r\n]+/)[1].split(/[\r\n]+/)[0].split('-->');
                 parts[0] = SubPlayerJS.timeStampToSeconds(parts[0], "srt");
                 parts[1] = SubPlayerJS.timeStampToSeconds(parts[1], "srt");
 
+                
                 var text = "";
-                for(var i = 2; i < line.split('\r\n').length; i++){
-                    text = text + line.split('\r\n')[i] + "<br />";
+                for(var i = 2; i < line.split(/[\r\n]+/).length; i++){
+                    text = text + line.split(/[\r\n]+/)[i] + "<br />";
                 }
                 parts[2] = text;
-                
-                console.log("parts: ");
-                console.log(parts);
                 subtitleArray[videoid - 1].push(parts);
             }
         });
@@ -455,6 +480,42 @@ class SubPlayerJS {
         return false;
 
     }
+    
+    static loadFont(videoid){
+        console.log("LOADING FONTS");
+        console.log(fontsArray[videoid - 1]);
+        var fonts = fontsArray[videoid - 1];
+        for (var style in fonts) {
+           var font = fonts[style];
+            $.ajax({
+            async: false,
+            url: 'https://crossorigin.me/https://www.onlinewebfonts.com/search?q=' + font,
+            success: function(data) { 
+                var foundUrl = data.substring(data.indexOf("url")).split('"')[2].split('"')[0].replace("/download/", "");
+                var fontstyle = data.substring(data.indexOf("url")).split('"')[5].substring(1 ).split('<')[0];
+                console.log(foundUrl);
+                console.log(fontstyle);
+                 loadjscssfile("https://db.onlinewebfonts.com/c/" + foundUrl + "?family=" + fontstyle, "css");
+                 
+                   console.log(font);
+                console.log(fonts);
+                 for (var style2 in fonts) {
+                     //console.log(fonts[style2] + " =?= " + fonts[style] + "-?>" + fontstyle);
+                    if( fonts[style2] == fonts[style]){
+                         fonts[style2] = fontstyle;
+                    }
+                 }
+                console.log(fonts);
+            }});
+             console.log(fonts);
+        }
+        
+        
+        fontsArray[videoid - 1] = fonts;
+    console.log("done");
+}
+
+    
 }
 function loadjscssfile(filename, filetype) {
     if (filetype == "js") { //if filename is a external JavaScript file
