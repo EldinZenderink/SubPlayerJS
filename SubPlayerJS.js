@@ -11,6 +11,7 @@ var isPlaying = false;
 var isFullScreen = false;
 var isSubtitleEnabled = true;
 var isSeeking = false;
+var isParsing = false;
 var subtitleArray = [];
 var ammountOfVideos = 0;
 var fontsArray = [];
@@ -42,8 +43,8 @@ class SubPlayerJS {
         if (!$("link[href='http://fonts.googleapis.com/icon?family=Material+Icons']").length) {
             loadjscssfile("http://fonts.googleapis.com/icon?family=Material+Icons", "css");
         }
-        if (!$("link[href='SubPlayerJS.css']").length) {
-            loadjscssfile("SubPlayerJS.css", "css");
+        if (!$("link[href='https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css']").length) {
+            loadjscssfile("https://rawgit.com/EldinZenderink/SubPlayerJS/master/SubPlayerJS.css", "css");
         }
         if (!$("link[href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css']").length) {
             loadjscssfile("https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css", "css");
@@ -56,7 +57,168 @@ class SubPlayerJS {
 
         this.videoid = ammountOfVideos;
 
-        this.getTimeStamp(ammountOfVideos);
+        
+    }
+
+
+    parseSubtitle(){
+        this.resetSubtitle();
+        var subPlayerVideo = SubPlayerJS.getVideo(this.videoid.toString());
+        var previousTime = 0;
+        var previousTotalAVBytesDecoded = 0;        
+        var bitRate = 0;
+        var curTime = 0;
+        var totalAVBytesDecoded= 0;
+        var packsParsed = 0;
+        var packsSize = 0;
+        var packsContainingSubtitle = 0;
+        var timeItSeekedTo = 0;
+        var timeSeekTook = 0;
+        var audioBytesDecoded = 0;
+        var videoBytesDecoded = 0;
+        var bitRate = 0;
+        var curTime = 0;    
+        var guessedBytePosition = 0;
+        var parsedSubtitle = [];
+        var needsToSeek = false;
+        var isPlaying = false;
+        var sourceUrl = this.file;
+        var videoid = this.videoid.toString();
+        console.log(videoid);
+        console.log(subPlayerVideo);
+        subPlayerVideo.onended = function(e) {
+            isPlaying = false;             
+        };
+        subPlayerVideo.onplay = function(){
+            isPlaying = true;
+        }
+        subPlayerVideo.onpause = function(){
+            isPlaying = false;
+            console.log("is pausing");
+            console.log(subPlayerVideo.currentTime);
+        }
+        subPlayerVideo.onseeking = function(){
+
+
+            timeItSeekedTo = subPlayerVideo.currentTime;
+
+
+            if(!needsToSeek){
+                if(timeItSeekedTo < previousTime){
+                    needsToSeek = true;
+                    var parsedSubtitleLength = parsedSubtitle.length;
+
+                    for(var x = 0; x < parsedSubtitleLength; x++){
+                        var timeOfSubtitle = parsedSubtitle[x].time;
+                        if(Math.round(timeOfSubtitle) > Math.round(timeItSeekedTo)){
+                            guessedBytePosition = totalAVBytesDecoded - parsedSubtitle[x].decodedBytes;
+                            subPlayerVideo.currentTime = timeOfSubtitle;
+                            return;
+                        }
+                    }
+                    needsToSeek = false;
+                } else {
+                    subPlayerVideo.currentTime = previousTime;
+                    needsToSeek = true;                    
+                }
+
+            }
+            
+            
+        }
+
+
+        subPlayerVideo.ontimeupdate = function(){
+
+            audioBytesDecoded = subPlayerVideo.webkitAudioDecodedByteCount;
+            videoBytesDecoded = subPlayerVideo.webkitVideoDecodedByteCount;
+            totalAVBytesDecoded = videoBytesDecoded + audioBytesDecoded;
+            curTime = subPlayerVideo.currentTime;
+            bitRate = totalAVBytesDecoded / curTime;
+
+            
+
+            var startRequest = Math.round(previousTotalAVBytesDecoded - guessedBytePosition) ;
+            var endRequest = Math.round(totalAVBytesDecoded - guessedBytePosition) ;
+            packsSize = endRequest - startRequest;
+
+            if(subPlayerVideo.currentTime < timeItSeekedTo){
+                subPlayerVideo.playbackRate = 100;
+            } else  {
+                needsToSeek = false;
+                subPlayerVideo.playbackRate = 1;
+                var oReq2 = new XMLHttpRequest();
+                oReq2.open("GET", sourceUrl, true);
+                oReq2.setRequestHeader('Range', 'bytes=' + startRequest + '-' + endRequest); 
+                oReq2.responseType = "blob";
+
+                oReq2.onload = function(oEvent) {
+                    console.log("Received file!");
+                    var blob = oReq2.response;
+                    packsParsed++;
+
+                    var reader = new FileReader();
+                    reader.onload = function(){
+                        var binaryString = this.result;
+                        if(binaryString.indexOf("0,,")){
+                            var searchResult = binaryString.split("0,,");
+                            var resultLength = searchResult.length;
+                            if(resultLength > 1){
+                                var parsed = "";
+                                for(var x = 1; x < resultLength; x++){
+                                    var decoded = decodeURI(encodeURI(searchResult[x]).split('%E2%80%BA')[0]) + " \r\n";
+                                    if(decoded.indexOf('%E2%80%BA') < 0 && decoded !== undefined){
+                                        parsed = parsed  + decoded;
+                                    }
+                                     
+                                }
+
+                                parsedSubtitle.push({time: curTime, decodedBytes: previousTotalAVBytesDecoded});
+                                packsContainingSubtitle++;
+                                //document.querySelector('#result').innerHTML = parsed;
+                                $('#subtitle_' + videoid.toString()).html('<div style="font-family: Sans-Serif;">' + parsed.replace("\\N", "<br />") + '</div>');
+                                console.log(videoid);
+                            }
+                            
+                        }
+                        
+                    }
+                    reader.readAsText(blob, 'ISO-8859-1');
+                };
+                oReq2.send(null);
+
+            }
+
+            
+            var data = " \
+             Time: " + curTime + " \r\n \
+             BitRate: " + (bitRate / 100) + "kbps \r\n \
+             Audio Bytes Decoded: " + (audioBytesDecoded / 1000000) + "mb \r\n \
+             Video Bytes Decoded: " + (videoBytesDecoded / 1000000) + "mb \r\n \
+             Total Bytes Decoded: " + (totalAVBytesDecoded / 1000000) + " mb \r\n \
+             Buffer Length: " + subPlayerVideo.buffered.length + "\r\n \
+             Buffer Start: " + subPlayerVideo.buffered.start(subPlayerVideo.buffered.length - 1) + "\r\n \
+             Buffer End: " + subPlayerVideo.buffered.end(subPlayerVideo.buffered.length - 1) + "\r\n \
+             Packs Parsed: " + packsParsed + "\r\n \
+             Packs Contianing Subtitle: " + packsContainingSubtitle + " \r\n \
+             Timedifference seek: " + timeSeekTook + " \r\n \
+             guessedBytePosition: " + guessedBytePosition + " \r\n \
+             Packs Size: " + packsSize;     
+            
+            //document.querySelector('#videodata').innerHTML = data;
+
+            previousTotalAVBytesDecoded = totalAVBytesDecoded;
+            //previousTime = curTime;
+
+        }
+        setInterval(function(){
+            if(previousTime != curTime){
+                previousTime = curTime;
+            }
+
+        }, 1000); 
+
+
     }
 
     setSubtitle(subtitleurl) {
@@ -70,6 +232,8 @@ class SubPlayerJS {
             $('#enableSub_' + ammountOfVideos.toString()).html('<i class="material-icons" style="color: rgb(96, 96, 96);">subtitles</i>');
         }
 
+        this.getTimeStamp();
+
     }
 
     setWidth(width) {
@@ -82,7 +246,7 @@ class SubPlayerJS {
     }
 
     resetSubtitle() {
-        $('#subtitle_' + ammountOfVideos.toString()).html('');
+        $('#subtitle_' + this.videoid.toString()).html('');
     }
 
     loadVideo(videoid) {
@@ -204,9 +368,10 @@ class SubPlayerJS {
         });
     }
 
-    getTimeStamp(videoid) {
-        var subPlayerVideo = SubPlayerJS.getVideo(videoid);
+    getTimeStamp() {
+        var subPlayerVideo = SubPlayerJS.getVideo(this.videoid.toString());
         var that = this;
+        var videoid = this.videoid.toString();
         this.interval = setInterval(function() {
             var curTimeSecond = subPlayerVideo.currentTime;
             this.currentTime = curTimeSecond;
@@ -486,28 +651,56 @@ class SubPlayerJS {
         console.log(fontsArray[videoid - 1]);
         var fonts = fontsArray[videoid - 1];
         for (var style in fonts) {
-           var font = fonts[style];
-            $.ajax({
-            async: false,
-            url: 'https://crossorigin.me/https://www.onlinewebfonts.com/search?q=' + font,
-            success: function(data) { 
-                var foundUrl = data.substring(data.indexOf("url")).split('"')[2].split('"')[0].replace("/download/", "");
-                var fontstyle = data.substring(data.indexOf("url")).split('"')[5].substring(1 ).split('<')[0];
-                console.log(foundUrl);
-                console.log(fontstyle);
-                 loadjscssfile("https://db.onlinewebfonts.com/c/" + foundUrl + "?family=" + fontstyle, "css");
-                 
-                   console.log(font);
-                console.log(fonts);
-                 for (var style2 in fonts) {
-                     //console.log(fonts[style2] + " =?= " + fonts[style] + "-?>" + fontstyle);
-                    if( fonts[style2] == fonts[style]){
-                         fonts[style2] = fontstyle;
+            var font = fonts[style].split(' ')[0];
+
+            var downloadFont = true;
+            if (typeof(Storage) !== "undefined") {
+                if(localStorage.getItem(style) !== null){
+                    console.log("LOADED FONT: " + font + " FROM LOCAL STORAGE :D" );
+                    loadjscssfile("data:text/css;base64," + localStorage.getItem(font), "css");
+                    downloadFont = false;
+                   
+                }
+            }
+
+            if(downloadFont){
+                console.log("downloading: " + font);
+                $.ajax({
+                    async: false,
+                    url: 'https://crossorigin.me/https://www.onlinewebfonts.com/search?q=' + font,
+                    success: function(data) { 
+                        //console.log(data);
+                        var foundUrl = data.substring(data.indexOf("class=\"url")).split('"')[3].split('"')[0].replace("/download/", "");
+                        var fontstyle = data.substring(data.indexOf("class=\"url")).split('"')[5].substring(1 ).split('<')[0];
+                        console.log("foundUrl: " + foundUrl);
+                        console.log("fontstyle: " + fontstyle);
+
+                        $.ajax({
+                            async: true,
+                            url: "https://crossorigin.me/https://db.onlinewebfonts.com/c/" + foundUrl + "?family=" + fontstyle,
+                            success: function(data) { 
+                                if (typeof(Storage) !== "undefined") {
+                                    // Store
+                                    localStorage.setItem(font, btoa(unescape(encodeURIComponent(data))));
+                                    console.log("saved subtitle: " + fontstyle + " as base64 in localstorage");
+                                } else {
+                                    console.log("did notsaved subtitle: " + fontstyle + " as base64 in localstorage");
+                                }
+                            }
+                        });
+
+
+                         loadjscssfile("https://db.onlinewebfonts.com/c/" + foundUrl + "?family=" + fontstyle, "css");
+                         for (var style2 in fonts) {
+                             //console.log(fonts[style2] + " =?= " + fonts[style] + "-?>" + fontstyle);
+                            if( fonts[style2] == fonts[style]){
+                                 fonts[style2] = fontstyle;
+                            }
+                         }
                     }
-                 }
-                console.log(fonts);
-            }});
-             console.log(fonts);
+                });
+            }
+           
         }
         
         
