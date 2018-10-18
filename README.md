@@ -3,7 +3,7 @@
 SubPlayerJS is a in JavaScript written library to show subtitles on your video. It uses a modified HTML5 video player. 
 
 ### Goal
-My goal for this project is a universal subtitle video player that supports most of the commonly used text-based subtitle formats, think of .ass, .srt, .vtt and just plain old .txt. Main focus lies with .ass (Sub Station Alpha) support. **Be aware that embedded subtitles inside your video file are NOT supported!**
+My goal for this project is a universal subtitle video player that supports most of the commonly used text-based subtitle formats, think of .ass, .srt, .vtt and just plain old .txt. Main focus lies with .ass (Sub Station Alpha) support. **Be aware that embedded subtitles inside your video file are NOT supported! But is being worked on, see demo!**
 
 ### Version
 0.0.1 - initial release
