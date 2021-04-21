@@ -511,10 +511,10 @@ class SubPlayerJS {
     } 
 
     static parseSubRip(srt, videoid){
-        var lines = srt.split(/[\r\n]+[\r\n]+/);
+        var lines = srt.split(/[\r\n]+/g); // CR+LF
         $.each(lines, function(key, line) {
             if (line.indexOf("-->") > -1) {
-                var parts = line.split(/[\r\n]+/)[1].split(/[\r\n]+/)[0].split('-->');
+                var parts = line.split(/[\r\n]+/)[0].split('-->');
                 parts[0] = SubPlayerJS.timeStampToSeconds(parts[0], "srt");
                 parts[1] = SubPlayerJS.timeStampToSeconds(parts[1], "srt");
 
